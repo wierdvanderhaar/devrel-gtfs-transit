@@ -7,3 +7,4 @@ venv/
 *.log
 *.zip
 log.txt
+.env
