@@ -60,7 +60,8 @@ def get_vehicle_positions():
     cursor = conn.cursor()
 
     try:
-        cursor.execute("SELECT timestamp, vehicle['trip']['trip_id'], vehicle['vehicle']['label'], vehicle['trip']['route_id'], vehicle['position']['position'], vehicle['vehicle']['license_plate'] FROM vehicle_positions WHERE timestamp = (SELECT max(timestamp) FROM vehicle_positions)")
+        # TODO get agency name from the URL...
+        cursor.execute("SELECT timestamp, vehicle['trip']['trip_id'], vehicle['vehicle']['label'], vehicle['trip']['route_id'], vehicle['position']['position'], vehicle['vehicle']['license_plate'] FROM vehicle_positions_wmata WHERE timestamp = (SELECT max(timestamp) FROM vehicle_positions_wmata)")
 
         for train in cursor.fetchall():
             result = {
