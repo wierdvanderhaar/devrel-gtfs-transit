@@ -30,7 +30,7 @@ def update_vehicle_positions():
     #   vehicle object(dynamic)
     # );
 
-    conn = client.connect("http://localhost:4200/", username="crate") # TODO consolidated into just URL and use env vars
+    conn = client.connect(os.environ["CRATEDB_URL"])
     vehicle_position_data = []
 
     cursor = conn.cursor()
