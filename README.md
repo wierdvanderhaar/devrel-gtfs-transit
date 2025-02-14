@@ -2,6 +2,11 @@ Getting GeoJSON from GTFS:
 
 https://github.com/BlinkTagInc/gtfs-to-geojson
 
+```bash
+cd gtfs-static
+gtfs-to-geojson --configPath ./config_wego.json
+```
+
 Getting GTFS static data for WMATA rail:
 
 ```bash
