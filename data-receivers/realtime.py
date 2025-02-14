@@ -23,6 +23,7 @@ def update_vehicle_positions():
     feed.ParseFromString(response.content)
     entities = protobuf_to_dict(feed)
 
+    # TODO this is going to require the agency id in it...
     # create table vehicle_positions (
     #   id text primary key,
     #   sequence bigint,
