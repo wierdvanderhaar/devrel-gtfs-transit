@@ -1,20 +1,22 @@
 from crate import client
+from dotenv import load_dotenv
 from google.transit import gtfs_realtime_pb2
 from protobuf_to_dict import protobuf_to_dict
 from time import sleep
 import json
+import os
 import requests
 
-
-# TODO some stuff with loading environment variables.
+# Load environment variables / secrets from .env file.
+load_dotenv()
 
 def update_vehicle_positions():
     feed = gtfs_realtime_pb2.FeedMessage()
     response = requests.get(
-        'https://api.wmata.com/gtfs/rail-gtfsrt-vehiclepositions.pb',
+        os.environ["GTFS_FEED_URL"],
         headers = {
-            'Cache-Control': 'no-cache',
-            'api_key': '<redcated>' # TODO move to environment variables.
+            "Cache-Control": "no-cache",
+            "api_key": os.environ["GTFS_FEED_KEY"] # TODO make auth mechanism an env var
         }
     )
 
