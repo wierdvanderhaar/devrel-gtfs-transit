@@ -1,17 +1,20 @@
 import json
-from flask import Flask, render_template
+import os
 from crate import client
+from dotenv import load_dotenv
+from flask import Flask, render_template
 
-# TODO some stuff with environment variables.
+# Load environment variables / secrets from .env file.
+load_dotenv()
 
 app = Flask(__name__)
 
 # Connect to CrateDB
-conn = client.connect("") # TODO move to environment variables.
+conn = client.connect(os.environ["CRATEDB_URL"])
 
 @app.route("/api/networkmap")
 def get_network_map():
-    agency_name = "WMATA" # TODO make configurable or pass it in...
+    agency_name = os.environ["GTFS_AGENCY_NAME"]
     results = { "results": [] }
 
     cursor = conn.cursor()
