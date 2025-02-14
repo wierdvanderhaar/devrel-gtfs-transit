@@ -1,0 +1,13 @@
+certifi==2025.1.31
+charset-normalizer==3.4.1
+crate==2.0.0
+gtfs-realtime-bindings==1.0.0
+idna==3.10
+orjson==3.10.15
+protobuf==5.29.3
+protobuf3-to-dict==0.1.5
+requests==2.32.3
+setuptools==75.8.0
+six==1.17.0
+urllib3==2.3.0
+verlib2==0.2.1
