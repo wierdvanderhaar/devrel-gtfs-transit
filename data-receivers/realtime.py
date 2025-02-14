@@ -24,7 +24,7 @@ def update_vehicle_positions():
     entities = protobuf_to_dict(feed)
 
     # TODO this is going to require the agency id in it...
-    # create table vehicle_positions (
+    # create table vehicle_positions_wmata (
     #   id text primary key,
     #   sequence bigint,
     #   timestamp timestamp,
@@ -36,10 +36,12 @@ def update_vehicle_positions():
 
     cursor = conn.cursor()
 
-    cursor.execute("SELECT max(timestamp) FROM vehicle_positions")
+    # TODO get the agency name from env vars.
+    cursor.execute("SELECT max(timestamp) FROM vehicle_positions_wmata")
     res = cursor.fetchone()
+
     feed_ts = entities["header"]["timestamp"]
-    latest_in_db = res[0]
+    latest_in_db = 0 if res[0] is None else res[0] 
 
     print(f"timestamp from feed: {entities["header"]["timestamp"]}, latest in db: {latest_in_db}")
 
@@ -65,7 +67,8 @@ def update_vehicle_positions():
 
     # https://cratedb.com/docs/python/en/latest/query.html#bulk-inserts
     result = cursor.executemany(
-        "INSERT INTO vehicle_positions (id, sequence, timestamp, vehicle) VALUES (?, ?, ?, ?)",
+        # TODO get agency name from env vars.
+        "INSERT INTO vehicle_positions_wmata (id, sequence, timestamp, vehicle) VALUES (?, ?, ?, ?)",
         vehicle_position_data
     )
 
