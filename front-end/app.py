@@ -80,6 +80,16 @@ def get_vehicle_positions():
     
     return results
 
+# TODO add a route for the front end to get its configuration...
+# Initial lat, long
+# Initial zoom, max zoom
+# Agency name e.g. WMATA
+
+@app.route("/api/config")
+def get_config():
+    # TODO pass in an agency name?
+    return "TODO"
+
 @app.route("/")
 def homepage():
     return render_template("index.html")
