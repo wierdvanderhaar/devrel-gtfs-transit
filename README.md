@@ -33,11 +33,6 @@ ROUTE DATA: https://www.nashvillemta.org/GoogleExport/google_routes.zip
 
 STOP DATA: https://www.nashvillemta.org/GoogleExport/google_stops.zip
 
-Nashville MTA
-Real-Time GTFS Transit Data API
-
-Developers should referance Google Transit API for more information: https://developers.google.com/transit/
-
 Service Alerts:
 http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/alert/alerts.pb
 
@@ -48,3 +43,7 @@ Vehicle Positions:
 http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/vehicle/vehiclepositions.pb
 
 http://transitdata.nashvillemta.org/TMGTFSRealTimeWebService/gtfs-realtime/trapezerealtimefeed.pb
+
+Swiss GTFS RT Portal
+
+https://opentransportdata.swiss/en/cookbook/gtfs-rt/
