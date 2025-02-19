@@ -173,5 +173,14 @@ L.tileLayer.grayscale(
     } else {
       clearInterval(interval);
     }
-  })
+  });
+
+
+  document.getElementById('showStops').addEventListener('change', e => {
+    if (e.currentTarget.checked) {
+      alert('on');
+    } else {
+      alert('off');
+    }
+  });
 })();
