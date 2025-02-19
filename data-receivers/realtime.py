@@ -22,6 +22,8 @@ def update_vehicle_positions():
         }
     )
 
+    # TODO deal with these exceptions:
+    # google.protobuf.message.DecodeError: Error parsing message with type 'transit_realtime.FeedMessage'
     feed.ParseFromString(response.content)
     entities = protobuf_to_dict(feed)
 
