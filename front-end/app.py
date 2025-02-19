@@ -30,7 +30,7 @@ def get_network_map():
 
 @app.route("/api/routeinfo")
 def get_route_colors():
-    agency_id = "1" # TODO make configurable or pass it in...
+    agency_id = os.environ["GTFS_AGENCY_ID"]
     results = { "results": [] }
 
     cursor = conn.cursor()
@@ -55,23 +55,22 @@ def get_route_colors():
 
 @app.route("/api/vehiclepositions")
 def get_vehicle_positions():
+    agency_id = os.environ["GTFS_AGENCY_ID"]
     results = { "results": [] }
 
     cursor = conn.cursor()
 
     try:
-        # TODO get agency name from the URL...
-        cursor.execute("SELECT timestamp, vehicle['trip']['trip_id'], vehicle['vehicle']['label'], vehicle['trip']['route_id'], vehicle['position']['position'], vehicle['vehicle']['license_plate'] FROM vehicle_positions_wmata WHERE timestamp = (SELECT max(timestamp) FROM vehicle_positions_wmata)")
+        cursor.execute(f"SELECT timestamp, vehicle['trip']['trip_id'], vehicle['vehicle']['label'], vehicle['trip']['route_id'], vehicle['position']['position'] FROM vehicle_positions WHERE agency_id = '{agency_id}' AND timestamp = (SELECT max(timestamp) FROM vehicle_positions WHERE agency_id = '{agency_id}')")
 
-        for train in cursor.fetchall():
+        for vehicle in cursor.fetchall():
             result = {
-                "timestamp": train[0],
-                "tripId": train[1],
-                "vehicleId": train[2],
-                "line": train[3],
-                "latitude": train[4][0],
-                "longitude": train[4][1],
-                "licensePlate": train[5]
+                "timestamp": vehicle[0],
+                "tripId": vehicle[1],
+                "vehicleId": vehicle[2],
+                "line": vehicle[3],
+                "latitude": vehicle[4][0],
+                "longitude": vehicle[4][1]
             }
 
             results["results"].append(result)
