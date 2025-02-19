@@ -90,11 +90,12 @@ async function drawRouteMap() {
 
   L.geoJSON(routeMap.results[0], {
     style: {
-      color: '#000000'
+      color: '#000000',
+      weight: 1
     },
     pointToLayer: function (feature, latlng) {
       return L.circleMarker(latlng, {
-        radius: 10,
+        radius: 7,
         fillColor: '#0000000',
         opacity: 0.5,
         fillOpacity: 0.5
