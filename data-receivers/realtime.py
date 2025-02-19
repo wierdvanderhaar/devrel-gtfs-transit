@@ -10,6 +10,8 @@ import requests
 # Load environment variables / secrets from .env file.
 load_dotenv()
 
+SLEEP_INTERVAL = int(os.environ["SLEEP_INTERVAL"])
+
 def update_vehicle_positions():
     feed = gtfs_realtime_pb2.FeedMessage()
     response = requests.get(
@@ -23,10 +25,9 @@ def update_vehicle_positions():
     feed.ParseFromString(response.content)
     entities = protobuf_to_dict(feed)
 
-    # TODO this is going to require the agency id in it...
-    # create table vehicle_positions_wmata (
-    #   id text primary key,
-    #   sequence bigint,
+    # create table vehicle_positions (
+    #   id text,
+    #   agency_id text,
     #   timestamp timestamp,
     #   vehicle object(dynamic)
     # );
@@ -36,8 +37,8 @@ def update_vehicle_positions():
 
     cursor = conn.cursor()
 
-    # TODO get the agency name from env vars.
-    cursor.execute("SELECT max(timestamp) FROM vehicle_positions_wmata")
+    agency_id = os.environ["GTFS_AGENCY_ID"]
+    cursor.execute(f"SELECT max(timestamp) FROM vehicle_positions WHERE agency_id='{agency_id}'")
     res = cursor.fetchone()
 
     feed_ts = entities["header"]["timestamp"]
@@ -50,17 +51,23 @@ def update_vehicle_positions():
         return
 
     for entity in entities["entity"]:
-        if entity["is_deleted"] == True:
+        print(entity)
+        # Ignore entries that might be marked as logically deleted.
+        if "is_deleted" in entity and entity["is_deleted"] == True:
             continue
 
-        del entity["is_deleted"]
+        # Tidy up if needed.
+        if "is_deleted" in entity:
+            del entity["is_deleted"]
+
         entity["vehicle"]["position"]["position"] = [ entity["vehicle"]["position"]["longitude"], entity["vehicle"]["position"]["latitude"] ]
         timestamp = entity["vehicle"]["timestamp"]
         del entity["vehicle"]["timestamp"]
 
         vehicle_position_data.append((
-            f"""{entity["vehicle"]["trip"]["trip_id"]}-{timestamp}""",
-            int(entity["id"]),
+            #f"""{entity["vehicle"]["trip"]["trip_id"]}-{timestamp}""",
+            f"""{entity["id"]}-{timestamp}""",
+            agency_id,
             timestamp,
             entity["vehicle"]
         ))
@@ -68,12 +75,12 @@ def update_vehicle_positions():
     # https://cratedb.com/docs/python/en/latest/query.html#bulk-inserts
     result = cursor.executemany(
         # TODO get agency name from env vars.
-        "INSERT INTO vehicle_positions_wmata (id, sequence, timestamp, vehicle) VALUES (?, ?, ?, ?)",
+        "INSERT INTO vehicle_positions (id, agency_id, timestamp, vehicle) VALUES (?, ?, ?, ?)",
         vehicle_position_data
     )
 
-    print(f"Updated {len(entities["entity"])} vehicle positions.")
+    print(f"{agency_id}: Updated {len(entities["entity"])} vehicle positions.")
 
 while True:
     update_vehicle_positions()
-    sleep(1) # TODO make this configurable in env var.
+    sleep(SLEEP_INTERVAL) # TODO make this configurable in env var.
