@@ -68,10 +68,12 @@ const INITIAL_LONGITUDE = -86.80435180664064; // Nashville
 
 const myMap = L.map('mapId').setView([INITIAL_LATITUDE, INITIAL_LONGITUDE], INITIAL_ZOOM);
 
+const stopMarkers = L.layerGroup();
 const vehicleMarkers = L.layerGroup();
 
 myMap.setMaxBounds(myMap.getBounds());
 myMap.setMinZoom(INITIAL_ZOOM);
+myMap.addLayer(stopMarkers);
 myMap.addLayer(vehicleMarkers);
 
 let routeInfo;
@@ -94,12 +96,15 @@ async function drawRouteMap() {
       weight: 1
     },
     pointToLayer: function (feature, latlng) {
-      return L.circleMarker(latlng, {
+      const stopMarker = L.circleMarker(latlng, {
         radius: 7,
         fillColor: '#0000000',
         opacity: 0.5,
         fillOpacity: 0.5
       });
+
+      stopMarkers.addLayer(stopMarker);
+      return stopMarker;
     },
     onEachFeature: function (feature, layer) {
       if (feature.properties && feature.properties.stop_id) {
@@ -175,12 +180,11 @@ L.tileLayer.grayscale(
     }
   });
 
-
   document.getElementById('showStops').addEventListener('change', e => {
     if (e.currentTarget.checked) {
-      alert('on');
+      myMap.addLayer(stopMarkers);
     } else {
-      alert('off');
+      myMap.removeLayer(stopMarkers);
     }
   });
 })();
