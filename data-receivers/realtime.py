@@ -2,6 +2,7 @@ from crate import client
 from dotenv import load_dotenv
 from google.transit import gtfs_realtime_pb2
 from protobuf_to_dict import protobuf_to_dict
+from google.protobuf.message import DecodeError
 from time import sleep
 import json
 import os
@@ -13,6 +14,8 @@ load_dotenv()
 SLEEP_INTERVAL = int(os.environ["SLEEP_INTERVAL"])
 
 def update_vehicle_positions():
+    agency_id = os.environ["GTFS_AGENCY_ID"]
+
     feed = gtfs_realtime_pb2.FeedMessage()
     response = requests.get(
         os.environ["GTFS_FEED_URL"],
@@ -24,8 +27,14 @@ def update_vehicle_positions():
 
     # TODO deal with these exceptions:
     # google.protobuf.message.DecodeError: Error parsing message with type 'transit_realtime.FeedMessage'
-    feed.ParseFromString(response.content)
-    entities = protobuf_to_dict(feed)
+    try:
+        feed.ParseFromString(response.content)
+        entities = protobuf_to_dict(feed)
+    except DecodeError as ex:
+        print(f"{agency_id}: Error decoding message:")
+        print(ex)
+        return
+
 
     # create table vehicle_positions (
     #   id text,
@@ -39,7 +48,6 @@ def update_vehicle_positions():
 
     cursor = conn.cursor()
 
-    agency_id = os.environ["GTFS_AGENCY_ID"]
     cursor.execute(f"SELECT max(timestamp) FROM vehicle_positions WHERE agency_id='{agency_id}'")
     res = cursor.fetchone()
 
