@@ -46,14 +46,13 @@ def update_vehicle_positions():
     feed_ts = entities["header"]["timestamp"]
     latest_in_db = 0 if res[0] is None else res[0] 
 
-    print(f"timestamp from feed: {entities["header"]["timestamp"]}, latest in db: {latest_in_db}")
+    print(f"{agency_id}: timestamp from feed: {entities["header"]["timestamp"]}, latest in db: {latest_in_db}")
 
     if feed_ts <= latest_in_db:
-        print("Nothing new to store this time.")
+        print(f"{agency_id}: Nothing new to store this time.")
         return
 
     for entity in entities["entity"]:
-        print(entity)
         # Ignore entries that might be marked as logically deleted.
         if "is_deleted" in entity and entity["is_deleted"] == True:
             continue
@@ -70,7 +69,7 @@ def update_vehicle_positions():
             #f"""{entity["vehicle"]["trip"]["trip_id"]}-{timestamp}""",
             f"""{entity["id"]}-{timestamp}""",
             agency_id,
-            timestamp,
+            feed_ts, # TODO this is an experiment, replacing 'timestamp' for individual vehicles.
             entity["vehicle"]
         ))
 
