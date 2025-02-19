@@ -58,13 +58,15 @@ L.tileLayer.grayscale = function (url, options) {
 
 /* ---- End Grayscale code ---- */
 
-const INITIAL_ZOOM = 11;
-const MAX_ZOOM = 16;
+// TODO make this come from config.
+//const INITIAL_ZOOM = 11; // WMATA
+//const MAX_ZOOM = 16; // WMATA
+const INITIAL_ZOOM = 10; // Nashville
+const MAX_ZOOM = 99;
+const INITIAL_LATITUDE = 36.1312200154285; // Nashville
+const INITIAL_LONGITUDE = -86.80435180664064; // Nashville
 
-// WMATA... TODO make this come from config...
-const myMap = L.map('mapId').setView([38.94979740456157, -77.07767486572267], INITIAL_ZOOM);
-// Nashville We Go
-//const myMap = L.map('mapId').setView([36.1886692, -86.8529148], INITIAL_ZOOM);
+const myMap = L.map('mapId').setView([INITIAL_LATITUDE, INITIAL_LONGITUDE], INITIAL_ZOOM);
 
 const vehicleMarkers = L.layerGroup();
 
