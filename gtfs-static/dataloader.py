@@ -2,7 +2,12 @@ import csv
 import json
 import sys
 from crate import client
+from dotenv import load_dotenv
 
+# Load environment variables / secrets from .env file.
+load_dotenv()
+
+# TODO this needs a plural name
 # CREATE TABLE IF NOT EXISTS agency (
 #     agency_id TEXT PRIMARY KEY,
 #     agency_name TEXT,
@@ -13,16 +18,20 @@ from crate import client
 #     agency_fare_url TEXT
 # );
 
+# TODO this needs a plural name
+# TODO add agency id to this somehow
 # CREATE TABLE IF NOT EXISTS network (
 #     agency_name TEXT PRIMARY KEY,
 #     network TEXT INDEX OFF STORAGE WITH (columnstore = false)
 # );
 
+# TODO this needs a plural name
 # CREATE TABLE IF NOT EXISTS route (
 #     route_id TEXT,
 #     agency_id TEXT,
 #     route_short_name TEXT,
 #     route_long_name TEXT,
+#     route_desc TEXT,
 #     route_type TEXT,
 #     route_url TEXT,
 #     route_color TEXT,
@@ -50,7 +59,7 @@ def load_csv_file(file_name):
 
 
 def insert_data(table_name, column_names, rows):
-    conn = client.connect("") # TODO move to environment variables.
+    conn = client.connect(os.environ["CRATEDB_URL"])
     cursor = conn.cursor()
 
     try:
@@ -75,15 +84,14 @@ def load_route_data(file_name):
     
 
 def load_network_data(file_name):
-    print(f"TODO - load {file_name}")
-    agency_name = "WMATA" # TODO read this from a file.
+    agency_name = "WeGo Public Transit" # TODO read this from a file.
 
     with open(file_name) as geojson_file:
         geojson = json.load(geojson_file)
     
     print(json.dumps(geojson))
 
-    conn = client.connect("") # TODO move to environment variables.
+    conn = client.connect(os.environ["CRATEDB_URL"])
     cursor = conn.cursor() 
 
     try:
