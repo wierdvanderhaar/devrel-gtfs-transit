@@ -14,9 +14,19 @@
 
 <body>
   <div id="mapId"></div>
+  <div class="field is-grouped">
+    <div class="control">
+      <input id="autoRefresh" type="checkbox" name="autoRefresh" class="switch is-medium is-default" checked="checked">
+      <label for="autoRefresh">Auto refresh.</label>
+    </div>
+    <div class="control">
+      <input id="showStops" type="checkbox" name="showStops" class="switch is-medium is-default" checked="checked">
+      <label for="showStops">Show stops.</label>
+    </div>
+  </div>
+  </div>
   <div class="field">
-    <input id="autoRefresh" type="checkbox" name="autoRefresh" class="switch is-medium is-default" checked="checked">
-    <label for="autoRefresh">Auto refresh.</label>
+
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
