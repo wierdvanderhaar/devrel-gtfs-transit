@@ -155,9 +155,11 @@ At this point you should see the route map for the agency that you're working wi
 
 No vehicles will be visible on the map yet.  To see these, you'll need to run the real time data receiver components (see below).  
 
-## Start the Real Time Data Receiver Components
+When you're finished with the real time data receiver, stop it with `Ctrl-C` (but keep it running for now, so you'll be able to see the real time data soon...)
 
-The real time data receiver components are responsible for reading real time vehicle location and other data from the transit agencies and saving it in the database.
+## Start the Real Time Data Receiver Component
+
+The real time data receiver is responsible for reading real time vehicle location and other data from the transit agencies and saving it in the database.
 
 First, create a virtual environment and install the dependencies:
 
@@ -174,7 +176,7 @@ Now make a copy of the example environment file provided:
 cp env.example .env
 ```
 
-dit the `.env` file, changing the value of `CRATEDB_URL` to be the connection URL for your CrateDB database.
+Edit the `.env` file, changing the value of `CRATEDB_URL` to be the connection URL for your CrateDB database.
 
 If you're running CrateDB locally (for example with the provided Docker Compose file) there's nothing to change here.
 
@@ -204,13 +206,15 @@ Finally, if your agency requires an API key to access realtime vehicle movements
 
 Save your changes.
 
-Start gathering real time vehicle position data by running this command:
+Start gathering real time data by running this command:
 
 ```bash
 python realtime.py
 ```
 
 Assuming that the Flask front end web application is running, you should now see vehicle movement details at `http://localhost:8000`.
+
+When you're finished with the real time data receiver, stop it with `Ctrl-C`.
 
 ## Work in Progress Notes Below
 
