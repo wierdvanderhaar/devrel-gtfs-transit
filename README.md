@@ -20,7 +20,7 @@ TODO
 
 TODO text.
 
-Before creating the database tables, you'll need to create a virtual environment for the data loader and configure it.  First, create a virtual environment and install the dependencies:
+Before creating the database tables, you'll need to create a virtual environment for the data loader and configure it:
 
 ```bash
 cd gtfs-static
@@ -91,7 +91,7 @@ python dataloader.py geojson/wmata/wmata.geojson WMATA
 
 TODO description.
 
-Before starting the front end Flask application, you'll need to create a virtual environment and configure it.  First, create a virtual environment and install the dependencies:
+Before starting the front end Flask application, you'll need to create a virtual environment and configure it:
 
 ```bash
 cd front-end
@@ -143,11 +143,64 @@ Using your browser, visit `http://localhost:8000` to view the map front end inte
 
 At this point you should see the route map for the agency that you're working with, along with the stations / stops on the routes.  Clicking a station or stop should show information about it.
 
-No vehicles will be visible on the map yet.  To see these, you'll need to run the real time data collection components (see below).
+No vehicles will be visible on the map yet.  To see these, you'll need to run the real time data receiver components (see below).  
 
-## Start the Real Time Data Collection Components
+## Start the Real Time Data Receiver Components
 
-TODO
+The real time data receiver components are responsible for reading real time vehicle location and other data from the transit agencies and saving it in the database.
+
+First, create a virtual environment and install the dependencies:
+
+```bash
+cd front-end
+python -m venv venv
+. ./venv/bin/activate
+pip install -r requirements.txt
+```
+
+Now make a copy of the example environment file provided:
+
+```bash
+cp env.example .env
+```
+
+dit the `.env` file, changing the value of `CRATEDB_URL` to be the connection URL for your CrateDB database.
+
+If you're running CrateDB locally (for example with the provided Docker Compose file) there's nothing to change here.
+
+If you're running CrateDB in the cloud, change the connection URL as follows, using the values for your cloud cluster instance:
+
+```
+https://admin:<password>@<hostname>:4200
+```
+
+Now, edit the value of `GTFS_AGENCY_ID` to contain the ID for the agency you're using.  It should match the value returned by this query:
+
+```sql
+SELECT agency_id FROM agencies
+```
+
+For example, for Washington DC / WMATA, the correct setting is:
+
+```
+GTFS_AGENCY_ID=1
+```
+
+Set the value of `SLEEP_INTERVAL` to be the number of seconds that the component sleeps between checking the transit agency for updates.  This defaults to `1`, but you may need to set a longer interval if the agency you're using implements rate limiting on its API endpoints.
+
+Next, set the value of `GTFS_POSITIONS_FEED_URL` to the realtime vehicle movements endpoint URL for your agency.  For example for Washington DC / WMATA this is `https://api.wmata.com/gtfs/rail-gtfsrt-vehiclepositions.pb`.
+
+Finally, if your agency requires an API key to access realtime vehicle movements data, set the value of `GTFS_POSITIONS_FEED_KEY` appropriately.
+
+Save your changes.
+
+Start gathering real time vehicle position data by running this command:
+
+```bash
+python realtime.py
+```
+
+Assuming that the Flask front end web application is running, you should now see vehicle movement details at `http://localhost:8000`.
 
 ## Work in Progress Notes Below
 
