@@ -12,8 +12,10 @@ TODO
 
 Next you'll need to get a copy of the code from GitHub by cloning the repository. Open up your terminal and change directory to wherever you store coding projects, then enter the following commands:
 
+```bash
 git clone https://github.com/crate/devrel-gtfs-transit.git
 cd devrel-gtfs-transit
+```
 
 ## Getting a CrateDB Database
 
