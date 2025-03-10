@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   cratedb:
     container_name: cratedb-gtfs-demo
