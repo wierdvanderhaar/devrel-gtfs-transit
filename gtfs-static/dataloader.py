@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 import sys
 from crate import client
 from dotenv import load_dotenv
@@ -7,38 +8,66 @@ from dotenv import load_dotenv
 # Load environment variables / secrets from .env file.
 load_dotenv()
 
-# TODO this needs a plural name
-# CREATE TABLE IF NOT EXISTS agency (
-#     agency_id TEXT PRIMARY KEY,
-#     agency_name TEXT,
-#     agency_url TEXT,
-#     agency_timezone TEXT,
-#     agency_lang TEXT,
-#     agency_phone TEXT,    
-#     agency_fare_url TEXT
-# );
+def create_tables():
+    conn = client.connect(os.environ["CRATEDB_URL"])
+    cursor = conn.cursor()
 
-# TODO this needs a plural name
-# TODO add agency id to this somehow
-# CREATE TABLE IF NOT EXISTS network (
-#     agency_name TEXT PRIMARY KEY,
-#     network TEXT INDEX OFF STORAGE WITH (columnstore = false)
-# );
+    try:
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS agencies (
+                agency_id TEXT,
+                agency_name TEXT PRIMARY KEY,
+                agency_url TEXT,
+                agency_timezone TEXT,
+                agency_lang TEXT,
+                agency_phone TEXT,    
+                agency_fare_url TEXT
+            )
+        """)
 
-# TODO this needs a plural name
-# CREATE TABLE IF NOT EXISTS route (
-#     route_id TEXT,
-#     agency_id TEXT,
-#     route_short_name TEXT,
-#     route_long_name TEXT,
-#     route_desc TEXT,
-#     route_type TEXT,
-#     route_url TEXT,
-#     route_color TEXT,
-#     as_route TEXT,
-#     network_id TEXT,
-#     route_text_color TEXT
-# );
+        print("Created agencies table if needed.")
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS networks (
+                agency_name TEXT PRIMARY KEY,
+                agency_id TEXT,
+                network TEXT INDEX OFF STORAGE WITH (columnstore = false)
+            )
+        """)
+
+        print("Created networks table if needed.")
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS routes (
+                route_id TEXT,
+                agency_id TEXT,
+                route_short_name TEXT,
+                route_long_name TEXT,
+                route_desc TEXT,
+                route_type TEXT,
+                route_url TEXT,
+                route_color TEXT,
+                as_route TEXT,
+                network_id TEXT,
+                route_text_color TEXT
+            )
+        """)
+
+        print("Created routes table if needed.")
+
+        cursor.execute("""
+            CREATE TABLE vehicle_positions (
+                id TEXT,
+                agency_id TEXT,
+                timestamp TIMESTAMP,
+                vehicle OBJECT(DYNAMIC)
+            )
+        """)
+
+        print("Created vehicle positions table if needed.")
+        print("Finished creating any necessary tables.")
+    finally:
+        cursor.close()
 
 def load_csv_file(file_name):
     first_row = True
@@ -73,30 +102,26 @@ def insert_data(table_name, column_names, rows):
 
 def load_agency_data(file_name):
     header_row, data_rows = load_csv_file(file_name)
-    insert_data("agency", header_row, data_rows)
+    insert_data("agencies", header_row, data_rows)
     print("Inserted agency data.")
 
 
 def load_route_data(file_name):
     header_row, data_rows = load_csv_file(file_name)
-    insert_data("route", header_row, data_rows)
+    insert_data("routes", header_row, data_rows)
     print("Inserted route data.") 
     
 
-def load_network_data(file_name):
-    agency_name = "WeGo Public Transit" # TODO read this from a file.
-
+def load_network_data(file_name, agency_name):
     with open(file_name) as geojson_file:
         geojson = json.load(geojson_file)
     
-    print(json.dumps(geojson))
-
     conn = client.connect(os.environ["CRATEDB_URL"])
     cursor = conn.cursor() 
 
     try:
         cursor.execute(
-            "INSERT INTO network (agency_name, network) VALUES (?, ?)",
+            "INSERT INTO networks (agency_name, network) VALUES (?, ?)",
             (agency_name, json.dumps(geojson))
         )
     finally:
@@ -104,13 +129,15 @@ def load_network_data(file_name):
 
     print("Inserted network data.")
 
-if len(sys.argv) != 2:
-    print("You need to pass in a file name!")
-elif sys.argv[1].endswith("agency.txt"):
+if len(sys.argv) < 2:
+    print("You need to pass in a file name and/or other parameters!")
+elif len(sys.argv) == 2 and sys.argv[1] == "createtables":
+    create_tables()
+elif len(sys.argv) == 2 and sys.argv[1].endswith("agency.txt"):
     load_agency_data(sys.argv[1])
-elif sys.argv[1].endswith("routes.txt"):
+elif len(sys.argv) == 2 and sys.argv[1].endswith("routes.txt"):
     load_route_data(sys.argv[1])
-elif sys.argv[1].endswith(".geojson"):
-    load_network_data(sys.argv[1])
+elif len(sys.argv) == 3 and sys.argv[1].endswith(".geojson"):
+    load_network_data(sys.argv[1], sys.argv[2])
 else:
-    print("Not a recognized file name.")
+    print("Invalid usage.")
