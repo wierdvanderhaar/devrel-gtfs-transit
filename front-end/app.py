@@ -89,22 +89,23 @@ def get_vehicle_positions():
     
     return results
 
-# TODO add a route for the front end to get its configuration...
-# Initial lat, long
-# Initial zoom, max zoom
-# Agency name e.g. WMATA
 
 @app.route("/api/config")
 def get_config():
-    # TODO make these come from a datbase query.
-    config_vals = {
-        "initialZoom": 11,
-        "maxZoom": 16,
-        "initialLatitude": 38.94979740456157,
-        "initialLongitude":  -77.07767486572267
-    }
+    agency_id = os.environ["GTFS_AGENCY_ID"]
+    results = { "results": [] }
 
-    return { "results": [ config_vals ]}
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(f"SELECT configuration FROM config WHERE agency_id = '{agency_id}'")
+        res = cursor.fetchone()
+        results["results"].append(res[0])
+    finally:
+        cursor.close()
+
+    return results
+
 
 @app.route("/")
 def homepage():
