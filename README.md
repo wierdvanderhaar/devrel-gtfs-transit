@@ -1,3 +1,156 @@
+# TODO Title
+
+## Introduction
+
+TODO
+
+## Prerequisites
+
+TODO
+
+## Getting the Code
+
+TODO
+
+## Getting a CrateDB Database
+
+TODO
+
+## Creating the Database Tables
+
+TODO text.
+
+Before creating the database tables, you'll need to create a virtual environment for the data loader and configure it.  First, create a virtual environment and install the dependencies:
+
+```bash
+cd gtfs-static
+python -m venv venv
+. ./venv/bin/activate
+pip install -r requirements.txt
+```
+
+Now make a copy of the example environment file provided:
+
+```bash
+cp env.example .env
+```
+
+Edit the `.env` file, changing the value of `CRATEDB_URL` to be the connection URL for your CrateDB database.
+
+If you're running CrateDB locally (for example with the provided Docker Compose file) there's nothing to change here.
+
+If you're running CrateDB in the cloud, change the connection URL as follows, using the values for your cloud cluster instance:
+
+```
+https://admin:<password>@<hostname>:4200
+```
+
+Save your changes.
+
+Next, run the data loader to create the tables used by this project:
+
+```bash
+python dataloader.py createtables
+```
+
+You should see output similar to this:
+
+```
+Created agencies table if needed.
+Created networks table if needed.
+Created routes table if needed.
+Created vehicle positions table if needed.
+Finished creating any necessary tables.
+```
+
+Use the CrateDB console to verify that tables named `agencies`, `networks`, `routes` and `vehicle_positions` were created in the `doc` schema.
+
+## Load the Static Data
+
+The next step is to load static data about the transport network into the database.  We'll use Washington DC (WMATA) as an example. 
+
+First, load data into the `agencies` table:
+
+```bash
+python dataloader.py data-files/wmata/agency.txt
+```
+
+Next, populate the `routes` table:
+
+```bash
+python dataloader.py data-files/wmata/routes.txt
+```
+
+Finally, insert data into the `networks` table.  Here `WMATA` is the agency name, and must match the spelling and capitalization of the agency name in `agency.txt`:
+
+```bash
+python dataloader.py geojson/wmata/wmata.geojson WMATA
+```
+
+## Start the Front End Flask Application
+
+TODO description.
+
+Before starting the front end Flask application, you'll need to create a virtual environment and configure it.  First, create a virtual environment and install the dependencies:
+
+```bash
+cd front-end
+python -m venv venv
+. ./venv/bin/activate
+pip install -r requirements.txt
+```
+
+Now make a copy of the example environment file provided:
+
+```bash
+cp env.example .env
+```
+
+Edit the `.env` file, changing the value of `CRATEDB_URL` to be the connection URL for your CrateDB database.
+
+If you're running CrateDB locally (for example with the provided Docker Compose file) there's nothing to change here.
+
+If you're running CrateDB in the cloud, change the connection URL as follows, using the values for your cloud cluster instance:
+
+```
+https://admin:<password>@<hostname>:4200
+```
+
+Now, edit the values of `GTFS_AGENCY_NAME` and `GTFS_AGENCY_ID` to contain the agency name and ID for the agency you're using.  These should match the values returned by this query:
+
+```sql
+SELECT agency_name, agency_id FROM agencies
+```
+
+For example, for Washington DC / WMATA, the correct settings are:
+
+```
+GTFS_AGENCY_NAME=WMATA
+GTFS_AGENCY_ID=1
+```
+
+Don't forget that if either value contains a space, you'll need to surround the entire value with quotation marks.
+
+Save your changes.
+
+Now, start the front end application:
+
+```bash
+python app.py
+```
+
+Using your browser, visit `http://localhost:8000` to view the map front end interface.  
+
+At this point you should see the route map for the agency that you're working with, along with the stations / stops on the routes.  Clicking a station or stop should show information about it.
+
+No vehicles will be visible on the map yet.  To see these, you'll need to run the real time data collection components (see below).
+
+## Start the Real Time Data Collection Components
+
+TODO
+
+## Work in Progress Notes Below
+
 Getting GeoJSON from GTFS:
 
 https://github.com/BlinkTagInc/gtfs-to-geojson
