@@ -1,6 +1,7 @@
 import json
 import os
 from crate import client
+from crate.client import Error
 from dotenv import load_dotenv
 from flask import Flask, render_template
 
@@ -75,6 +76,14 @@ def get_vehicle_positions():
 
             results["results"].append(result)
 
+    except Error as e:
+        # There will be ColumnUnknownExceptions when the front
+        # end starts before any real time vehicle data has been
+        # stored in the database, these can be ignored.
+        if e.message.startswith("ColumnUnknownException"):
+            pass
+        else:
+            print(e)
     finally:
         cursor.close()
     
