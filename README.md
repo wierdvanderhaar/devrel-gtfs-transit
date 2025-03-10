@@ -10,7 +10,10 @@ TODO
 
 ## Getting the Code
 
-TODO
+Next you'll need to get a copy of the code from GitHub by cloning the repository. Open up your terminal and change directory to wherever you store coding projects, then enter the following commands:
+
+git clone https://github.com/crate/devrel-gtfs-transit.git
+cd devrel-gtfs-transit
 
 ## Getting a CrateDB Database
 
@@ -18,9 +21,9 @@ TODO
 
 ## Creating the Database Tables
 
-TODO text.
+We've provided a Python data loader script that will create the database tables in CrateDB for you.
 
-Before creating the database tables, you'll need to create a virtual environment for the data loader and configure it:
+You'll first need to create a virtual environment for the data loader and configure it:
 
 ```bash
 cd gtfs-static
