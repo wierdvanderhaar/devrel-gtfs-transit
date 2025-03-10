@@ -59,12 +59,14 @@ L.tileLayer.grayscale = function (url, options) {
 /* ---- End Grayscale code ---- */
 
 // TODO make this come from config.
-//const INITIAL_ZOOM = 11; // WMATA
-//const MAX_ZOOM = 16; // WMATA
-const INITIAL_ZOOM = 10; // Nashville
-const MAX_ZOOM = 99;
-const INITIAL_LATITUDE = 36.1312200154285; // Nashville
-const INITIAL_LONGITUDE = -86.80435180664064; // Nashville
+const INITIAL_ZOOM = 11; // WMATA
+const MAX_ZOOM = 16; // WMATA
+//const INITIAL_ZOOM = 10; // Nashville
+//const MAX_ZOOM = 99;
+//const INITIAL_LATITUDE = 36.1312200154285; // Nashville
+//const INITIAL_LONGITUDE = -86.80435180664064; // Nashville
+const INITIAL_LATITUDE = 38.94979740456157; // WMATA
+const INITIAL_LONGITUDE = -77.07767486572267; // WMATA
 
 const myMap = L.map('mapId').setView([INITIAL_LATITUDE, INITIAL_LONGITUDE], INITIAL_ZOOM);
 
