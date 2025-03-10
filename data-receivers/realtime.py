@@ -35,14 +35,6 @@ def update_vehicle_positions():
         print(ex)
         return
 
-
-    # create table vehicle_positions (
-    #   id text,
-    #   agency_id text,
-    #   timestamp timestamp,
-    #   vehicle object(dynamic)
-    # );
-
     conn = client.connect(os.environ["CRATEDB_URL"])
     vehicle_position_data = []
 
