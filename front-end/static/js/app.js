@@ -58,28 +58,32 @@ L.tileLayer.grayscale = function (url, options) {
 
 /* ---- End Grayscale code ---- */
 
-// TODO make this come from config.
-const INITIAL_ZOOM = 11; // WMATA
-const MAX_ZOOM = 16; // WMATA
-//const INITIAL_ZOOM = 10; // Nashville
-//const MAX_ZOOM = 99;
-//const INITIAL_LATITUDE = 36.1312200154285; // Nashville
-//const INITIAL_LONGITUDE = -86.80435180664064; // Nashville
-const INITIAL_LATITUDE = 38.94979740456157; // WMATA
-const INITIAL_LONGITUDE = -77.07767486572267; // WMATA
+let config = {
+  initialZoom: 11,
+  maxZoom: 16,
+  initialLatitude: 38.94979740456157,
+  initialLongitude:  -77.07767486572267
+};
 
-const myMap = L.map('mapId').setView([INITIAL_LATITUDE, INITIAL_LONGITUDE], INITIAL_ZOOM);
+const myMap = L.map('mapId').setView([config.initialLatitude, config.initialLongitude], config.initialZoom);
 
 const stopMarkers = L.layerGroup();
 const vehicleMarkers = L.layerGroup();
 
 myMap.setMaxBounds(myMap.getBounds());
-myMap.setMinZoom(INITIAL_ZOOM);
+myMap.setMinZoom(config.initialZoom);
 myMap.addLayer(stopMarkers);
 myMap.addLayer(vehicleMarkers);
 
 let routeInfo;
 let interval;
+
+async function getConfiguration() {
+  const response = await fetch('/api/config');
+  const responseObj = await response.json();
+
+  return responseObj.results[0];
+}
 
 async function getSystemInfo() {
   const response = await fetch('/api/routeinfo');
@@ -161,13 +165,14 @@ async function updateVehicleLocations() {
 L.tileLayer.grayscale(
   'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
   {
-    maxZoom: MAX_ZOOM,
+    maxZoom: config.maxZoom,
     opacity: 0.5,
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }
 ).addTo(myMap);
 
 (async () => {
+  await getConfiguration();
   await getSystemInfo();
   await drawRouteMap();
   updateVehicleLocations();
