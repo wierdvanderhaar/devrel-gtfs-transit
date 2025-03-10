@@ -18,10 +18,10 @@ def update_vehicle_positions():
 
     feed = gtfs_realtime_pb2.FeedMessage()
     response = requests.get(
-        os.environ["GTFS_FEED_URL"],
+        os.environ["GTFS_POSITIONS_FEED_URL"],
         headers = {
             "Cache-Control": "no-cache",
-            "api_key": os.environ["GTFS_FEED_KEY"] # TODO make auth mechanism an env var
+            "api_key": os.environ["GTFS_POSITIONS_FEED_KEY"] # TODO make auth mechanism an env var
         }
     )
 
@@ -69,13 +69,12 @@ def update_vehicle_positions():
             #f"""{entity["vehicle"]["trip"]["trip_id"]}-{timestamp}""",
             f"""{entity["id"]}-{timestamp}""",
             agency_id,
-            feed_ts, # TODO this is an experiment, replacing 'timestamp' for individual vehicles.
+            feed_ts,
             entity["vehicle"]
         ))
 
     # https://cratedb.com/docs/python/en/latest/query.html#bulk-inserts
     result = cursor.executemany(
-        # TODO get agency name from env vars.
         "INSERT INTO vehicle_positions (id, agency_id, timestamp, vehicle) VALUES (?, ?, ?, ?)",
         vehicle_position_data
     )
@@ -84,4 +83,4 @@ def update_vehicle_positions():
 
 while True:
     update_vehicle_positions()
-    sleep(SLEEP_INTERVAL) # TODO make this configurable in env var.
+    sleep(SLEEP_INTERVAL)
