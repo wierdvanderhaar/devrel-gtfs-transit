@@ -56,7 +56,7 @@ def create_tables():
         print("Created routes table if needed.")
 
         cursor.execute("""
-            CREATE TABLE vehicle_positions (
+            CREATE TABLE IF NOT EXISTS vehicle_positions (
                 id TEXT,
                 agency_id TEXT,
                 timestamp TIMESTAMP,
@@ -65,6 +65,15 @@ def create_tables():
         """)
 
         print("Created vehicle positions table if needed.")
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS config (
+                agency_id TEXT PRIMARY KEY,
+                configuration OBJECT(DYNAMIC)
+            )
+        """)
+
+        print("Created config table if needed.")
         print("Finished creating any necessary tables.")
     finally:
         cursor.close()
@@ -99,6 +108,23 @@ def insert_data(table_name, column_names, rows):
     finally:
         cursor.close()
 
+def load_config_data(file_name):
+    with open(file_name) as config_file:
+        conf = json.load(config_file)
+
+    conn = client.connect(os.environ["CRATEDB_URL"])
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(
+            "INSERT INTO config (agency_id, configuration) VALUES (?, ?)",
+            (conf["agencyId"], json.dumps(conf["configuration"]))
+        )
+    finally:
+        cursor.close()
+
+    print("Inserted network data.")
+    
 
 def load_agency_data(file_name):
     header_row, data_rows = load_csv_file(file_name)
@@ -137,6 +163,8 @@ elif len(sys.argv) == 2 and sys.argv[1].endswith("agency.txt"):
     load_agency_data(sys.argv[1])
 elif len(sys.argv) == 2 and sys.argv[1].endswith("routes.txt"):
     load_route_data(sys.argv[1])
+elif len(sys.argv) == 2 and sys.argv[1].endswith(".json"):
+    load_config_data(sys.argv[1])
 elif len(sys.argv) == 3 and sys.argv[1].endswith(".geojson"):
     load_network_data(sys.argv[1], sys.argv[2])
 else:

@@ -63,16 +63,23 @@ Created agencies table if needed.
 Created networks table if needed.
 Created routes table if needed.
 Created vehicle positions table if needed.
+Created config table if needed.
 Finished creating any necessary tables.
 ```
 
-Use the CrateDB console to verify that tables named `agencies`, `networks`, `routes` and `vehicle_positions` were created in the `doc` schema.
+Use the CrateDB console to verify that tables named `agencies`, `config`, `networks`, `routes` and `vehicle_positions` were created in the `doc` schema.
 
 ## Load the Static Data
 
 The next step is to load static data about the transport network into the database.  We'll use Washington DC (WMATA) as an example. 
 
-First, load data into the `agencies` table:
+First, load the configuration data for the agency:
+
+```bash
+python dataloader.py config-files/wmata.json
+```
+
+Now, load data into the `agencies` table:
 
 ```bash
 python dataloader.py data-files/wmata/agency.txt
