@@ -96,8 +96,15 @@ def get_vehicle_positions():
 
 @app.route("/api/config")
 def get_config():
-    # TODO pass in an agency name?
-    return "TODO"
+    # TODO make these come from a datbase query.
+    config_vals = {
+        "initialZoom": 11,
+        "maxZoom": 16,
+        "initialLatitude": 38.94979740456157,
+        "initialLongitude":  -77.07767486572267
+    }
+
+    return { "results": [ config_vals ]}
 
 @app.route("/")
 def homepage():
