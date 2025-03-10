@@ -20,7 +20,7 @@ def get_network_map():
     cursor = conn.cursor()
 
     try:
-        cursor.execute(f"SELECT network FROM network WHERE agency_name = '{agency_name}'")
+        cursor.execute(f"SELECT network FROM networks WHERE agency_name = '{agency_name}'")
         res = cursor.fetchone()
         results["results"].append(json.loads(res[0]))
     finally:
@@ -36,7 +36,7 @@ def get_route_colors():
     cursor = conn.cursor()
 
     try:
-        cursor.execute(f"SELECT route_id, route_short_name, route_long_name, route_color, route_text_color FROM route WHERE agency_id='{agency_id}'")
+        cursor.execute(f"SELECT route_id, route_short_name, route_long_name, route_color, route_text_color FROM routes WHERE agency_id='{agency_id}'")
         
         for route in cursor.fetchall():
             result = {
@@ -95,4 +95,4 @@ def homepage():
     return render_template("index.html")
 
 if __name__ == "__main__":
-    app.run(port=8000) # TODO move to environment variables.
+    app.run(port=int(os.environ["PORT"]))
