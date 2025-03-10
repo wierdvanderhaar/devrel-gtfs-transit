@@ -58,23 +58,14 @@ L.tileLayer.grayscale = function (url, options) {
 
 /* ---- End Grayscale code ---- */
 
-let config = {
-  initialZoom: 11,
-  maxZoom: 16,
-  initialLatitude: 38.94979740456157,
-  initialLongitude:  -77.07767486572267
-};
-
-const myMap = L.map('mapId').setView([config.initialLatitude, config.initialLongitude], config.initialZoom);
-
+const myMap = L.map('mapId');
 const stopMarkers = L.layerGroup();
 const vehicleMarkers = L.layerGroup();
 
-myMap.setMaxBounds(myMap.getBounds());
-myMap.setMinZoom(config.initialZoom);
 myMap.addLayer(stopMarkers);
 myMap.addLayer(vehicleMarkers);
 
+let config;
 let routeInfo;
 let interval;
 
@@ -89,7 +80,7 @@ async function getSystemInfo() {
   const response = await fetch('/api/routeinfo');
   const responseObj = await response.json();
 
-  routeInfo = responseObj.results;
+  return responseObj.results;
 }
 
 async function drawRouteMap() {
@@ -162,18 +153,24 @@ async function updateVehicleLocations() {
   }
 }
 
-L.tileLayer.grayscale(
-  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
-  {
-    maxZoom: config.maxZoom,
-    opacity: 0.5,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }
-).addTo(myMap);
-
 (async () => {
-  await getConfiguration();
-  await getSystemInfo();
+  config = await getConfiguration();
+
+  myMap.setView([config.initialLatitude, config.initialLongitude], config.initialZoom);
+
+  L.tileLayer.grayscale(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
+    {
+      maxZoom: config.maxZoom,
+      opacity: 0.5,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }
+  ).addTo(myMap);
+  
+  myMap.setMaxBounds(myMap.getBounds());
+  myMap.setMinZoom(config.initialZoom);
+  
+  routeInfo = await getSystemInfo();
   await drawRouteMap();
   updateVehicleLocations();
 
