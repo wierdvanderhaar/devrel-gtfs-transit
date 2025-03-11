@@ -105,7 +105,7 @@ async function drawRouteMap() {
     },
     onEachFeature: function (feature, layer) {
       if (feature.properties && feature.properties.stop_id) {
-        layer.bindPopup(`<h2>${feature.properties.stop_name}</h2>`);
+        layer.bindPopup(`<h2>${feature.properties.stop_name}</h2><p>ID: ${feature.properties.stop_id}</p>`);
       }
     }
   }).addTo(myMap);
