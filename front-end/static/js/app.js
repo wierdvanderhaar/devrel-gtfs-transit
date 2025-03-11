@@ -147,16 +147,22 @@ async function updateVehicleLocations() {
         <h2>Loading data...</h2>
       `);
 
-      const upcomingStopsResponse = await fetch(`/api/upcomingstops/${this.options.vehicle.tripId}/${this.options.vehicle.currentStopSequence}/${config.upcomingStopsToShow}`);
-      const upcomingStopsResults = await upcomingStopsResponse.json();
+      let popupContent = `<h2>${this.options.vehicle.line} ${this.options.vehicle.tripId}</h2>`;
 
-      let popupContent = `<h2>${this.options.vehicle.line} ${this.options.vehicle.tripId}</h2><h3>Next Stops:</h3><ol>`;
-      for (const upcomingStop of upcomingStopsResults.results) {
-        // TODO add times to the popup too...
-        popupContent = `${popupContent}<li>${upcomingStop.stopId}</li>`
+      if (this.options.vehicle.currentStopSequence) {
+        const upcomingStopsResponse = await fetch(`/api/upcomingstops/${this.options.vehicle.tripId}/${this.options.vehicle.currentStopSequence}/${config.upcomingStopsToShow}`);
+        const upcomingStopsResults = await upcomingStopsResponse.json();
+  
+        popupContent = `${popupContent}<h3>Next Stops:</h3><ol></ol>`;
+        for (const upcomingStop of upcomingStopsResults.results) {
+          // TODO add times to the popup too...
+          popupContent = `${popupContent}<li>${upcomingStop.stopId}</li>`
+        }
+  
+        popupContent = `${popupContent}</ol>`;
+  
       }
 
-      popupContent = `${popupContent}</ol>`;
       this.setPopupContent(popupContent);
     });
 
