@@ -77,7 +77,7 @@ def get_vehicle_positions():
                 "line": vehicle[3],
                 "latitude": vehicle[4][0],
                 "longitude": vehicle[4][1],
-                "currentStopSeqeuence": vehicle[5]
+                "currentStopSequence": vehicle[5]
             }
 
             results["results"].append(result)
@@ -123,7 +123,12 @@ def get_upcoming_stops_for_trip(trip_id, current_stop_sequence):
             # TODO move this work to a database query?
             for upcoming_stop in upcoming_stops[0][0]:
                 if upcoming_stop["stop_sequence"] >= current_stop_sequence:
-                    results["results"].append(upcoming_stop)
+                    results["results"].append({
+                        "stopId": upcoming_stop["stop_id"],
+                        "stopSequence": upcoming_stop["stop_sequence"],
+                        "departure": upcoming_stop["departure"] if "departure" in upcoming_stop else {},
+                        "arrival": upcoming_stop["arrival"] if "arrival" in upcoming_stop else {}
+                    })
     finally:
         cursor.close()
 

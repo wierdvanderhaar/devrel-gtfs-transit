@@ -136,15 +136,20 @@ async function updateVehicleLocations() {
         tripId: vehicle.tripId,
         vehicleId: vehicle.vehicleId,
         line: vehicle.line,
-        licensePlate: vehicle.licensePlate
+        licensePlate: vehicle.licensePlate,
+        currentStopSequence: vehicle.currentStopSequence
       }
     });
 
     vehicleMarker.on('click', function(e) {
+
       this.setPopupContent(`
         <h2>${this.options.vehicle.line} ${this.options.vehicle.tripId}</h2>
-        <p>TODO vehicle data...</p>
+        <p>Loading data...</p>
       `);
+
+      // TODO call the API and display some results...
+      console.log(`/api/upcomingstops/${this.options.vehicle.tripId}/${this.options.vehicle.currentStopSequence}`);
     });
 
     vehicleMarker.bindPopup('<p>TODO...</p>');
