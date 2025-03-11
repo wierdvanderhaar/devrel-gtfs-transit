@@ -243,10 +243,10 @@ Finally, if your agency requires an API key to access realtime vehicle movements
 
 Save your changes.
 
-Start gathering real time data by running this command:
+Start gathering real time vehicle position data by running this command:
 
 ```bash
-python realtime.py
+python vehicle_positions.py
 ```
 
 Assuming that the Flask front end web application is running, you should now see vehicle movement details at `http://localhost:8000`.
