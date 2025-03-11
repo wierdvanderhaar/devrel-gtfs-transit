@@ -4,7 +4,6 @@ from google.transit import gtfs_realtime_pb2
 from protobuf_to_dict import protobuf_to_dict
 from google.protobuf.message import DecodeError
 from time import sleep
-import json
 import os
 import requests
 
