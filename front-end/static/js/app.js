@@ -147,8 +147,6 @@ async function updateVehicleLocations() {
         <h2>Loading data...</h2>
       `);
 
-      // TODO call the API and display some results...
-      // TODO add the stop count limit here...
       const upcomingStopsResponse = await fetch(`/api/upcomingstops/${this.options.vehicle.tripId}/${this.options.vehicle.currentStopSequence}/${config.upcomingStopsToShow}`);
       const upcomingStopsResults = await upcomingStopsResponse.json();
 
@@ -156,7 +154,6 @@ async function updateVehicleLocations() {
       for (const upcomingStop of upcomingStopsResults.results) {
         // TODO add times to the popup too...
         popupContent = `${popupContent}<li>${upcomingStop.stopId}</li>`
-        console.log(upcomingStop);
       }
 
       popupContent = `${popupContent}</ol>`;
