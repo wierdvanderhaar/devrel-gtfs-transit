@@ -58,9 +58,6 @@ def update_trips():
             entity["trip_update"]
         ))
 
-    # TODO save it in the database...
-    print(trip_update_data)
-
     # https://cratedb.com/docs/python/en/latest/query.html#bulk-inserts
     result = cursor.executemany(
         "INSERT INTO trip_updates (id, agency_id, timestamp, details) VALUES (?, ?, ?, ?)",
