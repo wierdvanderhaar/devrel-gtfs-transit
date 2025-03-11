@@ -4,6 +4,7 @@
     "initialZoom": 11,
     "maxZoom": 16,
     "initialLatitude": 38.94979740456157,
-    "initialLongitude": -77.07767486572267
+    "initialLongitude": -77.07767486572267,
+    "upcomingStopsToShow": 5
   }
 }
