@@ -195,9 +195,9 @@ No vehicles will be visible on the map yet.  To see these, you'll need to run th
 
 When you're finished with the real time data receiver, stop it with `Ctrl-C` (but keep it running for now, so you'll be able to see the real time data soon...)
 
-## Start the Real Time Data Receiver Component
+## Start the Real Time Data Receiver Components
 
-The real time data receiver is responsible for reading real time vehicle location and other data from the transit agencies and saving it in the database.
+The real time data receivers are responsible for reading real time vehicle location and other data from the transit agencies and saving it in the database.
 
 First, create a virtual environment and install the dependencies:
 
@@ -240,7 +240,9 @@ Set the value of `SLEEP_INTERVAL` to be the number of seconds that the component
 
 Next, set the value of `GTFS_POSITIONS_FEED_URL` to the realtime vehicle movements endpoint URL for your agency.  For example for Washington DC / WMATA this is `https://api.wmata.com/gtfs/rail-gtfsrt-vehiclepositions.pb`.
 
-Finally, if your agency requires an API key to access realtime vehicle movements data, set the value of `GTFS_POSITIONS_FEED_KEY` appropriately.
+Set the value of `GTFS_TRIPS_FEED_URL` to the realtime trip updates endpoint URL for your agency. For example for Washington DC / WMATA this is `https://api.wmata.com/gtfs/rail-gtfsrt-tripupdates.pb`.
+
+Finally, if your agency requires an API key to access realtime data, set the values of `GTFS_POSITIONS_FEED_KEY` and `GTFS_TRIPS_FEED_KEY` appropriately.  You'll most likely use the same API key for both.
 
 Save your changes.
 
@@ -252,7 +254,13 @@ python vehicle_positions.py
 
 Assuming that the Flask front end web application is running, you should now see vehicle movement details at `http://localhost:8000`.
 
-When you're finished with the real time data receiver, stop it with `Ctrl-C`.
+You can also start gathering real time trip update data by running:
+
+```bash
+python trip_updates.py
+```
+
+When you're finished with the real time data receivers, stop them with `Ctrl-C`.
 
 ## Work in Progress Notes Below
 
