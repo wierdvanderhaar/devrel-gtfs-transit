@@ -62,7 +62,12 @@ def get_vehicle_positions():
     cursor = conn.cursor()
 
     try:
-        cursor.execute(f"SELECT timestamp, vehicle['trip']['trip_id'], vehicle['vehicle']['label'], vehicle['trip']['route_id'], vehicle['position']['position'] FROM vehicle_positions WHERE agency_id = '{agency_id}' AND timestamp = (SELECT max(timestamp) FROM vehicle_positions WHERE agency_id = '{agency_id}')")
+        cursor.execute(f"""
+            SELECT timestamp, vehicle['trip']['trip_id'], vehicle['vehicle']['label'], 
+                   vehicle['trip']['route_id'], vehicle['position']['position'], vehicle['current_stop_sequence'] 
+            FROM vehicle_positions WHERE agency_id = '{agency_id}' 
+            AND timestamp = (SELECT max(timestamp) FROM vehicle_positions WHERE agency_id = '{agency_id}')
+        """)
 
         for vehicle in cursor.fetchall():
             result = {
@@ -71,7 +76,8 @@ def get_vehicle_positions():
                 "vehicleId": vehicle[2],
                 "line": vehicle[3],
                 "latitude": vehicle[4][0],
-                "longitude": vehicle[4][1]
+                "longitude": vehicle[4][1],
+                "currentStopSeqeuence": vehicle[5]
             }
 
             results["results"].append(result)
