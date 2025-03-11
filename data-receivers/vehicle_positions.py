@@ -63,7 +63,6 @@ def update_vehicle_positions():
         del entity["vehicle"]["timestamp"]
 
         vehicle_position_data.append((
-            #f"""{entity["vehicle"]["trip"]["trip_id"]}-{timestamp}""",
             f"""{entity["id"]}-{timestamp}""",
             agency_id,
             feed_ts,
