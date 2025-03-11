@@ -77,6 +77,8 @@ def update_vehicle_positions():
 
     print(f"{agency_id}: Updated {len(entities["entity"])} vehicle positions.")
 
+    cursor.close()
+
 while True:
     update_vehicle_positions()
     sleep(SLEEP_INTERVAL)
