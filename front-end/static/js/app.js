@@ -141,19 +141,29 @@ async function updateVehicleLocations() {
       }
     });
 
-    vehicleMarker.on('click', function(e) {
+    vehicleMarker.on('click', async function(e) {
 
       this.setPopupContent(`
-        <h2>${this.options.vehicle.line} ${this.options.vehicle.tripId}</h2>
-        <p>Loading data...</p>
+        <h2>Loading data...</h2>
       `);
 
       // TODO call the API and display some results...
-      console.log(`/api/upcomingstops/${this.options.vehicle.tripId}/${this.options.vehicle.currentStopSequence}`);
+      // TODO add the stop count limit here...
+      const upcomingStopsResponse = await fetch(`/api/upcomingstops/${this.options.vehicle.tripId}/${this.options.vehicle.currentStopSequence}/${config.upcomingStopsToShow}`);
+      const upcomingStopsResults = await upcomingStopsResponse.json();
+
+      let popupContent = `<h2>${this.options.vehicle.line} ${this.options.vehicle.tripId}</h2><h3>Next Stops:</h3><ol>`;
+      for (const upcomingStop of upcomingStopsResults.results) {
+        // TODO add times to the popup too...
+        popupContent = `${popupContent}<li>${upcomingStop.stopId}</li>`
+        console.log(upcomingStop);
+      }
+
+      popupContent = `${popupContent}</ol>`;
+      this.setPopupContent(popupContent);
     });
 
-    vehicleMarker.bindPopup('<p>TODO...</p>');
-
+    vehicleMarker.bindPopup('');
     vehicleMarkers.addLayer(vehicleMarker);
   }
 }

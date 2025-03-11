@@ -95,8 +95,8 @@ def get_vehicle_positions():
     
     return results
 
-@app.route("/api/upcomingstops/<string:trip_id>/<int:current_stop_sequence>")
-def get_upcoming_stops_for_trip(trip_id, current_stop_sequence):
+@app.route("/api/upcomingstops/<string:trip_id>/<int:current_stop_sequence>/<int:max_to_show>")
+def get_upcoming_stops_for_trip(trip_id, current_stop_sequence, max_to_show):
     agency_id = os.environ["GTFS_AGENCY_ID"]
     results = { "results": [] }
 
@@ -129,6 +129,9 @@ def get_upcoming_stops_for_trip(trip_id, current_stop_sequence):
                         "departure": upcoming_stop["departure"] if "departure" in upcoming_stop else {},
                         "arrival": upcoming_stop["arrival"] if "arrival" in upcoming_stop else {}
                     })
+                
+                if len(results["results"]) == max_to_show:
+                    break
     finally:
         cursor.close()
 
