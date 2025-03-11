@@ -67,6 +67,17 @@ def create_tables():
         print("Created vehicle positions table if needed.")
 
         cursor.execute("""
+            CREATE TABLE IF NOT EXISTS trip_updates (
+                id TEXT,
+                agency_id TEXT,
+                timestamp TIMESTAMP,
+                details OBJECT(DYNAMIC)
+            )
+        """)
+
+        print("Created trip updates table if needed.")
+
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS config (
                 agency_id TEXT PRIMARY KEY,
                 configuration OBJECT(DYNAMIC)
