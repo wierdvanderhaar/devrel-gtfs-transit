@@ -89,6 +89,39 @@ def get_vehicle_positions():
     
     return results
 
+@app.route("/api/upcomingstops/<string:trip_id>/<int:current_stop_sequence>")
+def get_upcoming_stops_for_trip(trip_id, current_stop_sequence):
+    agency_id = os.environ["GTFS_AGENCY_ID"]
+    results = { "results": [] }
+
+
+
+    cursor = conn.cursor()
+
+    try:
+        # TODO can we get the stop names here rather than IDs?
+        # TODO can we limit stop sequences to >= current_stop_sequence in the DB query?
+        # TODO which would eliminate the for loop further down.
+        cursor.execute(f"""
+            SELECT details['stop_time_update'] AS stop_times
+            FROM trip_updates 
+            WHERE details['trip']['trip_id'] = '{trip_id}'  
+            ORDER BY timestamp DESC 
+            LIMIT 1
+        """)
+
+        upcoming_stops = cursor.fetchall();
+
+        if len(upcoming_stops) > 0:
+            # Return only stop sequences >= the provided one...
+            # TODO move this work to a database query?
+            for upcoming_stop in upcoming_stops[0][0]:
+                if upcoming_stop["stop_sequence"] >= current_stop_sequence:
+                    results["results"].append(upcoming_stop)
+    finally:
+        cursor.close()
+
+    return results
 
 @app.route("/api/config")
 def get_config():
