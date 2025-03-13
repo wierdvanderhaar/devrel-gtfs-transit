@@ -52,7 +52,7 @@ def update_trips():
         # TODO remove any fields we don't need?
 
         trip_update_data.append((
-            f"{entity["id"]}-{entity["trip_update"]["timestamp"]}",
+            f"{entity["id"]}-{feed_ts}",
             agency_id,
             feed_ts,
             entity["trip_update"]
