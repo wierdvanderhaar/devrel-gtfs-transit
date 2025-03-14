@@ -134,7 +134,7 @@ def load_config_data(file_name):
     finally:
         cursor.close()
 
-    print("Inserted network data.")
+    print("Inserted config data.")
     
 
 def load_agency_data(file_name):
