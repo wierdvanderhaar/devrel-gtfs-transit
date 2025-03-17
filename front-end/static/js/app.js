@@ -83,6 +83,11 @@ async function getSystemInfo() {
   return responseObj.results;
 }
 
+function getRefreshInterval() {
+  const refreshElement = document.getElementById('autoRefreshInterval');
+  return parseInt(refreshElement.options[refreshElement.selectedIndex].text, 10) * 1000;
+}
+
 async function drawRouteMap() {
   const response = await fetch('/api/networkmap');
   const routeMap = await response.json();
@@ -122,6 +127,16 @@ async function updateVehicleLocations() {
 
   vehicles = responseDoc.results;
 
+  let openPopupId;
+
+  // Is a popup currently open?
+  for ( const vehicleMarker of vehicleMarkers.getLayers()) {
+    const popup = vehicleMarker.getPopup();
+    if (popup && popup.isOpen()) {
+      openPopupId = vehicleMarker.options.vehicle.tripId;
+    }
+  }
+
   vehicleMarkers.clearLayers();
 
   for (const vehicle of vehicles) {
@@ -141,8 +156,7 @@ async function updateVehicleLocations() {
       }
     });
 
-    vehicleMarker.on('click', async function(e) {
-
+    vehicleMarker.on('popupopen', async function(e) {
       this.setPopupContent(`
         <h2>Loading data...</h2>
       `);
@@ -168,6 +182,10 @@ async function updateVehicleLocations() {
 
     vehicleMarker.bindPopup('');
     vehicleMarkers.addLayer(vehicleMarker);
+
+    if (openPopupId && openPopupId == vehicle.tripId) {
+      vehicleMarker.openPopup();
+    }
   }
 }
 
@@ -192,12 +210,16 @@ async function updateVehicleLocations() {
   await drawRouteMap();
   updateVehicleLocations();
 
-  interval = setInterval(updateVehicleLocations, 1000);
+  interval = setInterval(updateVehicleLocations, getRefreshInterval());
 
   document.getElementById('autoRefresh').addEventListener('change', e => {
+    const intervalSelect = document.getElementById('autoRefreshInterval');
+
     if (e.currentTarget.checked) {
-      interval = setInterval(updateVehicleLocations, 1000);
+      intervalSelect.removeAttribute('disabled');
+      interval = setInterval(updateVehicleLocations, getRefreshInterval());
     } else {
+      intervalSelect.setAttribute('disabled', '');
       clearInterval(interval);
     }
   });
@@ -208,5 +230,10 @@ async function updateVehicleLocations() {
     } else {
       myMap.removeLayer(stopMarkers);
     }
+  });
+
+  document.getElementById('autoRefreshInterval').addEventListener('change', e => {
+    clearInterval(interval);
+    interval = setInterval(updateVehicleLocations, getRefreshInterval());
   });
 })();

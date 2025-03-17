@@ -78,6 +78,22 @@ def create_tables():
         print("Created trip updates table if needed.")
 
         cursor.execute("""
+            CREATE TABLE IF NOT EXISTS trips (
+                route_id TEXT,
+                service_id TEXT,
+                trip_id TEXT,
+                headsign TEXT,
+                direction_id SMALLINT,
+                block_id SMALLINT,
+                shape_id TEXT,
+                scheduled_trip_id TEXT,
+                train_id TEXT
+            )
+        """)
+
+        print("Created trips table if needed.")
+
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS config (
                 agency_id TEXT PRIMARY KEY,
                 configuration OBJECT(DYNAMIC)

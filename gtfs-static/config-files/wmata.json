@@ -1,7 +1,7 @@
 {
   "agencyId": "1",
   "configuration": {
-    "initialZoom": 11,
+    "initialZoom": 10,
     "maxZoom": 16,
     "initialLatitude": 38.94979740456157,
     "initialLongitude": -77.07767486572267,
