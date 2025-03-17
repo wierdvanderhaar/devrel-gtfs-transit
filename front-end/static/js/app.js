@@ -122,6 +122,16 @@ async function updateVehicleLocations() {
 
   vehicles = responseDoc.results;
 
+  let openPopupId;
+
+  // Is a popup currently open?
+  for ( const vehicleMarker of vehicleMarkers.getLayers()) {
+    const popup = vehicleMarker.getPopup();
+    if (popup && popup.isOpen()) {
+      openPopupId = vehicleMarker.options.vehicle.tripId;
+    }
+  }
+
   vehicleMarkers.clearLayers();
 
   for (const vehicle of vehicles) {
@@ -141,8 +151,7 @@ async function updateVehicleLocations() {
       }
     });
 
-    vehicleMarker.on('click', async function(e) {
-
+    vehicleMarker.on('popupopen', async function(e) {
       this.setPopupContent(`
         <h2>Loading data...</h2>
       `);
@@ -168,6 +177,10 @@ async function updateVehicleLocations() {
 
     vehicleMarker.bindPopup('');
     vehicleMarkers.addLayer(vehicleMarker);
+
+    if (openPopupId && openPopupId == vehicle.tripId) {
+      vehicleMarker.openPopup();
+    }
   }
 }
 
