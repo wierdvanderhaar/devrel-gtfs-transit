@@ -38,6 +38,19 @@ def create_tables():
         print("Created networks table if needed.")
 
         cursor.execute("""
+            CREATE TABLE IF NOT EXISTS stations (
+            "stop_id" TEXT NOT NULL,
+            "stop_name" TEXT,
+            "latitude" DOUBLE PRECISION,
+            "longitude" DOUBLE PRECISION,
+            "line" TEXT,
+            PRIMARY KEY ("stop_id")
+            )
+        """)
+
+        print("Created stations table if needed.")
+        
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS routes (
                 route_id TEXT,
                 agency_id TEXT,
@@ -85,6 +98,7 @@ def create_tables():
         """)
 
         print("Created config table if needed.")
+
         print("Finished creating any necessary tables.")
     finally:
         cursor.close()
