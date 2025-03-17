@@ -152,19 +152,50 @@ def load_route_data(file_name):
 def load_network_data(file_name, agency_name):
     with open(file_name) as geojson_file:
         geojson = json.load(geojson_file)
-    
+
     conn = client.connect(os.environ["CRATEDB_URL"])
-    cursor = conn.cursor() 
+    cursor = conn.cursor()
+
+    station_data = []
+
+    # ✅ Extract station data from "features"
+    for feature in geojson.get("features", []):  # Check for "features" instead of "stations"
+        properties = feature.get("properties", {})
+        geometry = feature.get("geometry", {})
+
+        stop_id = properties.get("stop_id")
+        stop_name = properties.get("stop_name", "Unknown")
+        lat = geometry.get("coordinates", [None, None])[1]  # Lat is second in [lon, lat]
+        lon = geometry.get("coordinates", [None, None])[0]  # Lon is first
+
+        # Extract the first route (if available)
+        routes = properties.get("routes", [])
+        route_info = routes[0] if routes else {}  # Get the first route
+        line = route_info.get("route_short_name", "Unknown")
+
+        if stop_id:
+            station_data.append((stop_id, stop_name, lat, lon, line))
 
     try:
+        # ✅ Insert full network JSON
         cursor.execute(
-            "INSERT INTO networks (agency_name, network) VALUES (?, ?)",
+            "INSERT INTO networks (agency_name, network) VALUES (?, ?) ON CONFLICT (agency_name) DO UPDATE SET network = EXCLUDED.network",
             (agency_name, json.dumps(geojson))
         )
+        print("✅ Inserted network data.")
+
+        # ✅ Only insert stations if there is data
+        if station_data:
+            cursor.executemany(
+                "INSERT INTO stations (stop_id, stop_name, latitude, longitude, line) VALUES (?, ?, ?, ?, ?) ON CONFLICT (stop_id) DO NOTHING",
+                station_data
+            )
+            print(f"✅ Inserted {len(station_data)} stations into CrateDB.")
+        else:
+            print("⚠️ No station data found in geojson!")
+
     finally:
         cursor.close()
-
-    print("Inserted network data.")
 
 if len(sys.argv) < 2:
     print("You need to pass in a file name and/or other parameters!")
