@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="has-background-white">
+<html class="has-background-white" data-theme="light">
 
 <head>
   <meta charset="utf-8">
@@ -14,19 +14,24 @@
 
 <body>
   <div id="mapId"></div>
-  <div class="field is-grouped">
-    <div class="control">
-      <input id="autoRefresh" type="checkbox" name="autoRefresh" class="switch is-medium is-default" checked="checked">
-      <label for="autoRefresh">Auto refresh.</label>
-    </div>
+  <div class="field is-grouped view-options">
     <div class="control">
       <input id="showStops" type="checkbox" name="showStops" class="switch is-medium is-default" checked="checked">
       <label for="showStops">Show stops.</label>
     </div>
-  </div>
-  </div>
-  <div class="field">
-
+    <div class="control">
+      <input id="autoRefresh" type="checkbox" name="autoRefresh" class="switch is-medium is-default" checked="checked">
+      <label for="autoRefresh">Auto refresh.</label>
+    </div>
+    <span class="select is-medium">
+      <select id="autoRefreshInterval">
+        <option selected>1</option>
+        <option>2</option>
+        <option>5</option>
+        <option>10</option>
+        <option>30</option>
+      </select>
+    </span>
   </div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>

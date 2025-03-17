@@ -83,6 +83,11 @@ async function getSystemInfo() {
   return responseObj.results;
 }
 
+function getRefreshInterval() {
+  const refreshElement = document.getElementById('autoRefreshInterval');
+  return parseInt(refreshElement.options[refreshElement.selectedIndex].text, 10) * 1000;
+}
+
 async function drawRouteMap() {
   const response = await fetch('/api/networkmap');
   const routeMap = await response.json();
@@ -205,12 +210,16 @@ async function updateVehicleLocations() {
   await drawRouteMap();
   updateVehicleLocations();
 
-  interval = setInterval(updateVehicleLocations, 1000);
+  interval = setInterval(updateVehicleLocations, getRefreshInterval());
 
   document.getElementById('autoRefresh').addEventListener('change', e => {
+    const intervalSelect = document.getElementById('autoRefreshInterval');
+
     if (e.currentTarget.checked) {
-      interval = setInterval(updateVehicleLocations, 1000);
+      intervalSelect.removeAttribute('disabled');
+      interval = setInterval(updateVehicleLocations, getRefreshInterval());
     } else {
+      intervalSelect.setAttribute('disabled', '');
       clearInterval(interval);
     }
   });
@@ -221,5 +230,10 @@ async function updateVehicleLocations() {
     } else {
       myMap.removeLayer(stopMarkers);
     }
+  });
+
+  document.getElementById('autoRefreshInterval').addEventListener('change', e => {
+    clearInterval(interval);
+    interval = setInterval(updateVehicleLocations, getRefreshInterval());
   });
 })();
